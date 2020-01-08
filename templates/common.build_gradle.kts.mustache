@@ -1,0 +1,53 @@
+plugins {
+    kotlin("multiplatform") version "1.3.61"
+    kotlin("plugin.serialization") version "1.3.61"
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+kotlin {
+    {{#jvm}}
+    jvm()
+    {{/jvm}}
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-common"))
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+            }
+        }
+
+        {{#jvm}}
+        val jvmMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-jdk8"))
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version")
+            }
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(kotlin("test-junit"))
+            }
+        }
+        {{/jvm}}
+    }
+
+// Configure all compilations of all targets:
+    targets.all {
+        compilations.all {
+            kotlinOptions {
+                allWarningsAsErrors = true
+            }
+        }
+    }
+}
